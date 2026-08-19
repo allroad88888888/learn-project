@@ -37,7 +37,8 @@ esac; done
 
 # ---- locate the skill source: a local checkout (this script inside it) or ~/.learn-project (cloned/updated) ----
 resolve_src() {
-  local here; here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)" || here=""
+  # only trust a real script file (not `curl | bash`, where BASH_SOURCE is empty and cwd is arbitrary)
+  local here=""; [ -n "${BASH_SOURCE[0]:-}" ] && [ -f "${BASH_SOURCE[0]}" ] && here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   if [ -n "$here" ] && [ -f "$here/skills/$NAME/SKILL.md" ]; then SRC="$here"; return; fi
   need git
   if [ -d "$HOME_DIR/.git" ]; then
