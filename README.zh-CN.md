@@ -34,12 +34,25 @@
 
 ## 安装
 
-Claude Code（用户级）：
-```bash
-git clone https://github.com/allroad88888888/learn-project ~/.claude/skills/learn-project
-```
-项目级：clone 到 `<repo>/.claude/skills/learn-project`。其它 agent：指向 `SKILL.zh-CN.md`（中文）
-或 `SKILL.md`（英文）；脚本只需要 `bash 3.2+`、`git`、`awk`、`grep`、`sort`。
+一份源、多条通道。挑你的 agent：
+
+| Agent | 命令 | 装到哪 |
+|---|---|---|
+| **Claude Code**（skill，用户级） | `curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh \| bash -s -- --claude` | `~/.claude/skills/learn-project` |
+| **Claude Code**（skill，项目级） | `… \| bash -s -- --claude-project <repo>` | `<repo>/.claude/skills/learn-project` |
+| **Claude Code**（plugin） | `/plugin marketplace add allroad88888888/learn-project` 然后 `/plugin install learn-project@learn-project` | plugin 缓存 |
+| **Codex** | `… \| bash -s -- --codex`——或直接对 Codex 说：「从 allroad88888888/learn-project 装 skill，路径 skills/learn-project」（它自带的 `skill-installer` 会装） | `$CODEX_HOME/skills/learn-project` |
+| **Cursor** | `… \| bash -s -- --cursor <repo>`（写一条指向 skill 的 rule） | `<repo>/.cursor/rules/learn-project.mdc` |
+| **Gemini CLI / Copilot / 任何读 `AGENTS.md` 的** | `… \| bash -s -- --agents-md <repo>`（或 `--agents-md <repo>/GEMINI.md`）——追加一段带标记的指针 | 该文件 |
+| **任何加载 `<dir>/<name>/SKILL.md` 的 runtime** | `… \| bash -s -- --dir <path>` | `<path>/learn-project` |
+| **一次全装** | `… \| bash -s -- --all`（= `--claude --codex`） | |
+
+`install.sh` 幂等；`--copy` 拷贝而不软链，`--ref v0.1.0` 钉版本，同样的参数加 `--uninstall` 卸载。
+在本地 clone 里跑 `./install.sh …` 会软链到这个 clone——改 clone 所有 agent 同步生效；
+`curl` 方式会 clone 到 `~/.learn-project`（`LEARN_PROJECT_HOME` 可改）再软链。
+
+skill 遵循开放的 [Agent Skills](https://agentskills.io) 格式（`SKILL.md` + `name`/`description`），
+那里列出的任何客户端都能直接加载 `skills/learn-project/`。脚本只需要 `bash 3.2+`、`git`、`awk`、`grep`、`sort`。
 
 ## 用法
 
@@ -51,13 +64,20 @@ git clone https://github.com/allroad88888888/learn-project ~/.claude/skills/lear
 ```
 「加一个 X」/「Y 该放哪」/「这次改动还在设计上吗」
 ```
-随时（或在 CI）查漂移：
+随时或在 CI 查漂移：
 ```bash
 bash ~/.claude/skills/learn-project/scripts/check.sh <repo> <repo>/.claude/skills/project-lines
 ```
+```yaml
+# .github/workflows/lines-check.yml
+- uses: actions/checkout@v4
+  with: { fetch-depth: 0 }
+- run: git clone --depth 1 https://github.com/allroad88888888/learn-project /tmp/lp
+- run: bash /tmp/lp/skills/learn-project/scripts/check.sh . .claude/skills/project-lines
+```
 单独跑提取器：
 ```bash
-bash scripts/extract-all.sh <repo> /tmp/out && cat /tmp/out/SUMMARY.md
+bash skills/learn-project/scripts/extract-all.sh <repo> /tmp/out && cat /tmp/out/SUMMARY.md
 ```
 
 ## 参考跑
@@ -70,10 +90,13 @@ bash scripts/extract-all.sh <repo> /tmp/out && cat /tmp/out/SUMMARY.md
 ## 仓库布局
 
 ```
-SKILL.md / SKILL.zh-CN.md      流程（英 / 中）
-templates/{en,zh}/             index.md · line.md · questions.md · trace-prompt.md
-references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
-scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
+skills/learn-project/          skill 本体（Agent Skills 格式）
+  SKILL.md / SKILL.zh-CN.md      流程（英 / 中）
+  templates/{en,zh}/             index.md · line.md · questions.md · trace-prompt.md
+  references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
+  scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
+.claude-plugin/                plugin.json + marketplace.json（Claude Code plugin 通道）
+install.sh                     安装器：Claude Code / Codex / Cursor / AGENTS.md / 任意 skills 目录
 ```
 
 ## 原则（短版）

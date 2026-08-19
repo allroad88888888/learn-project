@@ -1,0 +1,17 @@
+{
+  "name": "learn-project",
+  "owner": { "name": "allroad88888888", "url": "https://github.com/allroad88888888" },
+  "metadata": {
+    "description": "learn-project — learn a codebase once; keep the understanding with the repo, not the chat.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "learn-project",
+      "source": "./",
+      "description": "Trace a repo's main line and branch lines from code + git history, get them owner-confirmed, read 1–2 line files per task instead of the repo, detect drift later. EN/ZH.",
+      "category": "development",
+      "tags": ["skill", "codebase", "onboarding", "architecture", "drift-check"]
+    }
+  ]
+}

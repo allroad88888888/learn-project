@@ -1,0 +1,10 @@
+{
+  "name": "learn-project",
+  "description": "Learn a codebase once and keep the understanding with the repo: main line + branch lines from code and git history, owner-confirmed, drift-checked. EN/ZH.",
+  "version": "0.1.0",
+  "author": { "name": "allroad88888888", "url": "https://github.com/allroad88888888" },
+  "homepage": "https://github.com/allroad88888888/learn-project",
+  "repository": "https://github.com/allroad88888888/learn-project",
+  "license": "MIT",
+  "keywords": ["skill", "codebase-understanding", "onboarding", "architecture", "drift", "agent-skills"]
+}

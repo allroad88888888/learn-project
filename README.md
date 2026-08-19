@@ -41,13 +41,27 @@ memory plugin, chat compression, a vector store, or one big `ARCHITECTURE.md`.
 
 ## Install
 
-Claude Code (user-wide):
-```bash
-git clone https://github.com/allroad88888888/learn-project ~/.claude/skills/learn-project
-```
-Project-local: clone into `<repo>/.claude/skills/learn-project`. Other agents: point them at
-`SKILL.md` (English) or `SKILL.zh-CN.md` (Chinese); the scripts need only `bash 3.2+`, `git`,
-`awk`, `grep`, `sort`.
+One skill source, several channels. Pick your agent:
+
+| Agent | Command | Where it lands |
+|---|---|---|
+| **Claude Code** (skill, user-level) | `curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh \| bash -s -- --claude` | `~/.claude/skills/learn-project` |
+| **Claude Code** (skill, project-level) | `… \| bash -s -- --claude-project <repo>` | `<repo>/.claude/skills/learn-project` |
+| **Claude Code** (plugin) | `/plugin marketplace add allroad88888888/learn-project` then `/plugin install learn-project@learn-project` | plugin cache |
+| **Codex** | `… \| bash -s -- --codex` — or tell Codex: *"install the skill from allroad88888888/learn-project, path skills/learn-project"* (its built-in `skill-installer` does it) | `$CODEX_HOME/skills/learn-project` |
+| **Cursor** | `… \| bash -s -- --cursor <repo>` (writes a rule that points at the skill) | `<repo>/.cursor/rules/learn-project.mdc` |
+| **Gemini CLI / Copilot / anything reading `AGENTS.md`** | `… \| bash -s -- --agents-md <repo>` (or `--agents-md <repo>/GEMINI.md`) — appends a marked pointer block | that file |
+| **Any runtime that loads `<dir>/<name>/SKILL.md`** | `… \| bash -s -- --dir <path>` | `<path>/learn-project` |
+| **Everything at once** | `… \| bash -s -- --all` (= `--claude --codex`) | |
+
+`install.sh` is idempotent; add `--copy` to copy instead of symlink, `--ref v0.1.0` to pin,
+`--uninstall` with the same flags to remove. Run from a local clone (`./install.sh …`) and it
+links to that clone, so editing the clone updates every agent. When run via `curl`, it clones to
+`~/.learn-project` (override with `LEARN_PROJECT_HOME`) and links from there.
+
+The skill follows the open [Agent Skills](https://agentskills.io) format (`SKILL.md` with
+`name`/`description`), so any client listed there can load `skills/learn-project/` directly.
+Scripts need only `bash 3.2+`, `git`, `awk`, `grep`, `sort`.
 
 ## Use
 
@@ -59,13 +73,20 @@ Later:
 ```
 "add an X" / "where should Y go" / "does this change still follow the design?"
 ```
-Drift check any time (or in CI):
+Drift check any time, or in CI:
 ```bash
 bash ~/.claude/skills/learn-project/scripts/check.sh <repo> <repo>/.claude/skills/project-lines
 ```
+```yaml
+# .github/workflows/lines-check.yml
+- uses: actions/checkout@v4
+  with: { fetch-depth: 0 }
+- run: git clone --depth 1 https://github.com/allroad88888888/learn-project /tmp/lp
+- run: bash /tmp/lp/skills/learn-project/scripts/check.sh . .claude/skills/project-lines
+```
 Run the extractors alone:
 ```bash
-bash scripts/extract-all.sh <repo> /tmp/out && cat /tmp/out/SUMMARY.md
+bash skills/learn-project/scripts/extract-all.sh <repo> /tmp/out && cat /tmp/out/SUMMARY.md
 ```
 
 ## Reference run
@@ -80,10 +101,13 @@ Rust workspace (renamed-crate imports resolved).
 ## Layout of this repo
 
 ```
-SKILL.md / SKILL.zh-CN.md      the procedure (EN / ZH)
-templates/{en,zh}/             index.md · line.md · questions.md · trace-prompt.md
-references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
-scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
+skills/learn-project/          the skill (Agent Skills format)
+  SKILL.md / SKILL.zh-CN.md      the procedure (EN / ZH)
+  templates/{en,zh}/             index.md · line.md · questions.md · trace-prompt.md
+  references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
+  scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
+.claude-plugin/                plugin.json + marketplace.json (Claude Code plugin channel)
+install.sh                     installer for Claude Code / Codex / Cursor / AGENTS.md / any skills dir
 ```
 
 ## Principles (short)
