@@ -49,6 +49,7 @@ One skill source, several channels. Pick your agent:
 | **Claude Code** (skill, project-level) | `… \| bash -s -- --claude-project <repo>` | `<repo>/.claude/skills/learn-project` |
 | **Claude Code** (plugin) | `/plugin marketplace add allroad88888888/learn-project` then `/plugin install learn-project@learn-project` | plugin cache |
 | **Codex** | `… \| bash -s -- --codex` — or tell Codex: *"install the skill from allroad88888888/learn-project, path skills/learn-project"* (its built-in `skill-installer` does it) | `$CODEX_HOME/skills/learn-project` |
+| **DeepSeek Harness (dsh)** | `… \| bash -s -- --dsh` (user, `$DSH_HOME/skills`) · `--dsh-project <repo>` (`<repo>/.dsh/skills`) · `--agents-home` (shared `~/.agents/skills`, also read by dsh) | native SKILL.md support, no plugin needed |
 | **Cursor** | `… \| bash -s -- --cursor <repo>` (writes a rule that points at the skill) | `<repo>/.cursor/rules/learn-project.mdc` |
 | **Gemini CLI / Copilot / anything reading `AGENTS.md`** | `… \| bash -s -- --agents-md <repo>` (or `--agents-md <repo>/GEMINI.md`) — appends a marked pointer block | that file |
 | **Any runtime that loads `<dir>/<name>/SKILL.md`** | `… \| bash -s -- --dir <path>` | `<path>/learn-project` |
@@ -107,7 +108,7 @@ skills/learn-project/          the skill (Agent Skills format)
   references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
   scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
 .claude-plugin/                plugin.json + marketplace.json (Claude Code plugin channel)
-install.sh                     installer for Claude Code / Codex / Cursor / AGENTS.md / any skills dir
+install.sh                     installer for Claude Code / Codex / DeepSeek Harness / Cursor / AGENTS.md / any skills dir
 ```
 
 ## Principles (short)

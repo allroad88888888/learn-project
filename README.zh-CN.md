@@ -42,6 +42,7 @@
 | **Claude Code**（skill，项目级） | `… \| bash -s -- --claude-project <repo>` | `<repo>/.claude/skills/learn-project` |
 | **Claude Code**（plugin） | `/plugin marketplace add allroad88888888/learn-project` 然后 `/plugin install learn-project@learn-project` | plugin 缓存 |
 | **Codex** | `… \| bash -s -- --codex`——或直接对 Codex 说：「从 allroad88888888/learn-project 装 skill，路径 skills/learn-project」（它自带的 `skill-installer` 会装） | `$CODEX_HOME/skills/learn-project` |
+| **DeepSeek Harness (dsh)** | `… \| bash -s -- --dsh`（用户级，`$DSH_HOME/skills`）· `--dsh-project <repo>`（`<repo>/.dsh/skills`）· `--agents-home`（共享 `~/.agents/skills`，dsh 也读） | 原生支持 SKILL.md，不用插件 |
 | **Cursor** | `… \| bash -s -- --cursor <repo>`（写一条指向 skill 的 rule） | `<repo>/.cursor/rules/learn-project.mdc` |
 | **Gemini CLI / Copilot / 任何读 `AGENTS.md` 的** | `… \| bash -s -- --agents-md <repo>`（或 `--agents-md <repo>/GEMINI.md`）——追加一段带标记的指针 | 该文件 |
 | **任何加载 `<dir>/<name>/SKILL.md` 的 runtime** | `… \| bash -s -- --dir <path>` | `<path>/learn-project` |
@@ -96,7 +97,7 @@ skills/learn-project/          skill 本体（Agent Skills 格式）
   references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
   scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
 .claude-plugin/                plugin.json + marketplace.json（Claude Code plugin 通道）
-install.sh                     安装器：Claude Code / Codex / Cursor / AGENTS.md / 任意 skills 目录
+install.sh                     安装器：Claude Code / Codex / DeepSeek Harness / Cursor / AGENTS.md / 任意 skills 目录
 ```
 
 ## 原则（短版）

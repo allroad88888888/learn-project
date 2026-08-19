@@ -4,10 +4,13 @@
 #   ./install.sh --claude                      user-level Claude Code   (~/.claude/skills/learn-project)
 #   ./install.sh --claude-project <repo>       project-level Claude Code (<repo>/.claude/skills/learn-project)
 #   ./install.sh --codex                       Codex                    ($CODEX_HOME/skills, default ~/.codex/skills)
+#   ./install.sh --dsh                         DeepSeek Harness         ($DSH_HOME/skills, default ~/.dsh/skills)
+#   ./install.sh --dsh-project <repo>          DeepSeek Harness, project-level (<repo>/.dsh/skills)
+#   ./install.sh --agents-home                 shared ~/.agents/skills  ($DSH_AGENTS_HOME; read by dsh and other clients)
 #   ./install.sh --cursor <repo>               Cursor rule pointing at the skill (<repo>/.cursor/rules/learn-project.mdc)
 #   ./install.sh --agents-md <repo|file>       append a pointer block to AGENTS.md (or GEMINI.md / any file you name)
 #   ./install.sh --dir <path>                  any agent that loads <path>/<name>/SKILL.md (e.g. a runtime's ./skills)
-#   ./install.sh --all                         = --claude --codex
+#   ./install.sh --all                         = --claude --codex --dsh
 #   options: --copy (copy instead of symlink) --ref <git ref> (default main) --uninstall --help
 set -u
 NAME=learn-project
@@ -23,17 +26,20 @@ while [ $# -gt 0 ]; do case "$1" in
   --claude)          TARGETS+=("claude	"); shift;;
   --claude-project)  TARGETS+=("claude-project	${2:?repo}"); shift 2;;
   --codex)           TARGETS+=("codex	"); shift;;
+  --dsh)             TARGETS+=("dsh	"); shift;;
+  --dsh-project)     TARGETS+=("dsh-project	${2:?repo}"); shift 2;;
+  --agents-home)     TARGETS+=("agents-home	"); shift;;
   --cursor)          TARGETS+=("cursor	${2:?repo}"); shift 2;;
   --agents-md)       TARGETS+=("agents-md	${2:?repo or file}"); shift 2;;
   --dir)             TARGETS+=("dir	${2:?path}"); shift 2;;
-  --all)             TARGETS+=("claude	" "codex	"); shift;;
+  --all)             TARGETS+=("claude	" "codex	" "dsh	"); shift;;
   --copy)            MODE=copy; shift;;
   --ref)             REF="${2:?ref}"; shift 2;;
   --uninstall)       UNINSTALL=1; shift;;
-  -h|--help)         sed -n '2,13p' "$0"; exit 0;;
+  -h|--help)         sed -n '2,16p' "$0"; exit 0;;
   *) die "unknown option $1 (see --help)";;
 esac; done
-[ ${#TARGETS[@]} -eq 0 ] && { sed -n '2,13p' "$0"; exit 1; }
+[ ${#TARGETS[@]} -eq 0 ] && { sed -n '2,16p' "$0"; exit 1; }
 
 # ---- locate the skill source: a local checkout (this script inside it) or ~/.learn-project (cloned/updated) ----
 resolve_src() {
@@ -104,6 +110,9 @@ for t in "${TARGETS[@]}"; do
     claude)         p="$HOME/.claude/skills";;
     claude-project) p="$arg/.claude/skills";;
     codex)          p="${CODEX_HOME:-$HOME/.codex}/skills";;
+    dsh)            p="${DSH_HOME:-$HOME/.dsh}/skills";;
+    dsh-project)    p="$arg/.dsh/skills";;
+    agents-home)    p="${DSH_AGENTS_HOME:-$HOME/.agents}/skills";;
     dir)            p="$arg";;
     cursor|agents-md) p="";;
   esac
@@ -121,4 +130,4 @@ for t in "${TARGETS[@]}"; do
     esac
   fi
 done
-[ "$UNINSTALL" = 1 ] || say "done — the skill is available in the next agent session (Claude Code: /learn-project · Codex: \"use the learn-project skill\")."
+[ "$UNINSTALL" = 1 ] || say "done — the skill is available in the next agent session (Claude Code: /learn-project · Codex / DeepSeek Harness: \"use the learn-project skill\")."
