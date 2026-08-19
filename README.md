@@ -139,6 +139,27 @@ and it links to that clone, so editing the clone updates every agent; via `curl`
 `bash 3.2+`, `git`, `awk`, `grep`, `sort`.
 </details>
 
+<details>
+<summary><b>Windows</b> — Git Bash/WSL, or native PowerShell</summary>
+
+If your agent already needs Git Bash or WSL for its shell tool on Windows (most coding agents
+do), just run any command above from inside it — `install.sh` works as-is.
+
+Without Git Bash, install natively with PowerShell (5.1+ or `pwsh`), no bash needed to place the
+files — same flags, PascalCase:
+
+```powershell
+iwr -useb https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.ps1 -OutFile install.ps1
+powershell -ExecutionPolicy Bypass -File install.ps1 -Claude -Codex
+```
+
+Symlinks need Administrator or Developer Mode; without either, `install.ps1` falls back to
+copying automatically (pass `-Copy` to always copy). One caveat either way: *placing* the skill
+needs no bash, but *running* it — `scripts/*.sh` at learn/check time — still does. That's already
+true of most coding agents' shell tool on Windows, so if your agent can run shell commands at
+all, bash is already available to it.
+</details>
+
 ## Use
 
 In your agent, on the repo you want to learn:
@@ -183,7 +204,8 @@ skills/learn-project/          the skill (Agent Skills format)
   references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
   scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
 .claude-plugin/                plugin.json + marketplace.json (Claude Code plugin channel)
-install.sh                     installer for Claude Code / Codex / DeepSeek Harness / Cursor / AGENTS.md / any skills dir
+install.sh                     installer (bash) for Claude Code / Codex / DeepSeek Harness / Cursor / AGENTS.md / any skills dir
+install.ps1                    same installer, native Windows PowerShell (no Git Bash/WSL needed to install)
 ```
 
 ## Principles (short)

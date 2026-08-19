@@ -127,6 +127,26 @@ curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/
 `bash 3.2+`、`git`、`awk`、`grep`、`sort`。
 </details>
 
+<details>
+<summary><b>Windows</b>——Git Bash/WSL，或原生 PowerShell</summary>
+
+如果你的 agent 在 Windows 上本来就靠 Git Bash 或 WSL 跑 shell 工具（多数编程 agent 都是这样），
+在里面跑上面任意一条命令即可，`install.sh` 原样能用。
+
+没有 Git Bash 的话，用 PowerShell（5.1+ 或 `pwsh`）原生安装，装的过程不需要 bash——参数同名，只是
+PascalCase：
+
+```powershell
+iwr -useb https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.ps1 -OutFile install.ps1
+powershell -ExecutionPolicy Bypass -File install.ps1 -Claude -Codex
+```
+
+软链需要管理员权限或开发者模式；两者都没有时 `install.ps1` 会自动回退成拷贝（`-Copy` 可强制总是拷贝）。
+有一点无论哪种方式都一样：**装**这个 skill 不需要 bash，但**跑**它——学习/查漂移时的 `scripts/*.sh`——
+仍然需要。这本来就是 Windows 上多数编程 agent 的 shell 工具的前提，你的 agent 能跑 shell 命令，
+就已经有 bash 可用。
+</details>
+
 ## 用法
 
 在你的 agent 里、在要学的仓库上：
@@ -169,7 +189,8 @@ skills/learn-project/          skill 本体（Agent Skills 格式）
   references/{en,zh}/            method.md · extractors.md · question-filter.md · verdicts.md
   scripts/                       extract-all · families · hubs · imports · timeline · recipe · churn · check · lib
 .claude-plugin/                plugin.json + marketplace.json（Claude Code plugin 通道）
-install.sh                     安装器：Claude Code / Codex / DeepSeek Harness / Cursor / AGENTS.md / 任意 skills 目录
+install.sh                     安装器（bash）：Claude Code / Codex / DeepSeek Harness / Cursor / AGENTS.md / 任意 skills 目录
+install.ps1                    同一个安装器，原生 Windows PowerShell 版（装的过程不需要 Git Bash/WSL）
 ```
 
 ## 原则（短版）

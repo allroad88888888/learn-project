@@ -67,7 +67,10 @@ install_skill_dir() { # install_skill_dir PARENT  -> PARENT/learn-project
     owned "$dest" || die "$dest exists and is not learn-project; remove it yourself first"
     rm -rf "$dest"
   fi
-  if [ "$MODE" = link ]; then ln -s "$SKILL_SRC" "$dest"; else cp -R "$SKILL_SRC" "$dest"; fi
+  if [ "$MODE" = link ] && ln -s "$SKILL_SRC" "$dest" 2>/dev/null; then :; else
+    [ "$MODE" = link ] && say "  (symlink failed — falling back to copy; on Windows this needs admin rights or Developer Mode)"
+    rm -rf "$dest"; cp -R "$SKILL_SRC" "$dest"
+  fi
   [ -f "$dest/SKILL.md" ] && [ -x "$dest/scripts/extract-all.sh" ] || die "verify failed at $dest"
   say "  ✓ $dest  ($MODE)"
 }
