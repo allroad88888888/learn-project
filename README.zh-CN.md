@@ -34,26 +34,98 @@
 
 ## 安装
 
-一份源、多条通道。挑你的 agent：
+一份源、多条通道。展开你用的那个——每个都是一条命令。
 
-| Agent | 命令 | 装到哪 |
-|---|---|---|
-| **Claude Code**（skill，用户级） | `curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh \| bash -s -- --claude` | `~/.claude/skills/learn-project` |
-| **Claude Code**（skill，项目级） | `… \| bash -s -- --claude-project <repo>` | `<repo>/.claude/skills/learn-project` |
-| **Claude Code**（plugin） | `/plugin marketplace add allroad88888888/learn-project` 然后 `/plugin install learn-project@learn-project` | plugin 缓存 |
-| **Codex** | `… \| bash -s -- --codex`——或直接对 Codex 说：「从 allroad88888888/learn-project 装 skill，路径 skills/learn-project」（它自带的 `skill-installer` 会装） | `$CODEX_HOME/skills/learn-project` |
-| **DeepSeek Harness (dsh)** | `… \| bash -s -- --dsh`（用户级，`$DSH_HOME/skills`）· `--dsh-project <repo>`（`<repo>/.dsh/skills`）· `--agents-home`（共享 `~/.agents/skills`，dsh 也读） | 原生支持 SKILL.md，不用插件 |
-| **Cursor** | `… \| bash -s -- --cursor <repo>`（写一条指向 skill 的 rule） | `<repo>/.cursor/rules/learn-project.mdc` |
-| **Gemini CLI / Copilot / 任何读 `AGENTS.md` 的** | `… \| bash -s -- --agents-md <repo>`（或 `--agents-md <repo>/GEMINI.md`）——追加一段带标记的指针 | 该文件 |
-| **任何加载 `<dir>/<name>/SKILL.md` 的 runtime** | `… \| bash -s -- --dir <path>` | `<path>/learn-project` |
-| **一次全装** | `… \| bash -s -- --all`（= `--claude --codex`） | |
+<details>
+<summary><b>Claude Code</b>——skill（用户级 / 项目级）或 plugin</summary>
 
-`install.sh` 幂等；`--copy` 拷贝而不软链，`--ref v0.1.0` 钉版本，同样的参数加 `--uninstall` 卸载。
-在本地 clone 里跑 `./install.sh …` 会软链到这个 clone——改 clone 所有 agent 同步生效；
-`curl` 方式会 clone 到 `~/.learn-project`（`LEARN_PROJECT_HOME` 可改）再软链。
+用户级（`~/.claude/skills/learn-project`）：
 
-skill 遵循开放的 [Agent Skills](https://agentskills.io) 格式（`SKILL.md` + `name`/`description`），
-那里列出的任何客户端都能直接加载 `skills/learn-project/`。脚本只需要 `bash 3.2+`、`git`、`awk`、`grep`、`sort`。
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --claude
+```
+
+项目级（`<repo>/.claude/skills/learn-project`，随仓库走）：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --claude-project <repo>
+```
+
+作为 plugin（在 Claude Code 里）：
+
+```
+/plugin marketplace add allroad88888888/learn-project
+/plugin install learn-project@learn-project
+```
+</details>
+
+<details>
+<summary><b>Codex</b>——原生 skill</summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --codex
+```
+
+落在 `$CODEX_HOME/skills/learn-project`（默认 `~/.codex/skills`）。或者直接对 Codex 说：
+「从 allroad88888888/learn-project 装 skill，路径 skills/learn-project」——它自带的 `skill-installer` 会装。
+</details>
+
+<details>
+<summary><b>DeepSeek Harness (dsh)</b>——原生 skill，不用插件</summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --dsh
+```
+
+落在 `$DSH_HOME/skills/learn-project`（默认 `~/.dsh/skills`）。另有：`--dsh-project <repo>` →
+`<repo>/.dsh/skills`；`--agents-home` → 共享的 `~/.agents/skills`（`$DSH_AGENTS_HOME`，dsh 和其它客户端都读）。
+</details>
+
+<details>
+<summary><b>Cursor</b>——一条指向 skill 的 rule</summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --cursor <repo>
+```
+
+写入 `<repo>/.cursor/rules/learn-project.mdc`（`alwaysApply: false`，按 description 触发），正文一句
+「读并照做 `…/learn-project/SKILL.md`」。与 `--claude-project <repo>` 一起用时自动写项目相对路径。
+</details>
+
+<details>
+<summary><b>Gemini CLI / GitHub Copilot / 任何读 <code>AGENTS.md</code> 的</b></summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --agents-md <repo>
+```
+
+往 `<repo>/AGENTS.md` 追加一段带标记的指针（也可指定文件：`--agents-md <repo>/GEMINI.md`、
+`--agents-md <repo>/.github/copilot-instructions.md`）。`--uninstall` 只删那一段。
+</details>
+
+<details>
+<summary><b>任何加载 <code>&lt;dir&gt;/&lt;name&gt;/SKILL.md</code> 的 runtime</b></summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --dir <path>
+```
+
+落在 `<path>/learn-project`。skill 遵循开放的 [Agent Skills](https://agentskills.io) 格式
+（`SKILL.md` + `name`/`description`），那里列出的任何客户端都能直接加载 `skills/learn-project/`。
+</details>
+
+<details>
+<summary><b>一次全装、选项、卸载</b></summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --all   # = --claude --codex --dsh
+```
+
+`install.sh` 幂等。选项：`--copy`（拷贝而不软链）、`--ref v0.1.0`（钉版本）、`--uninstall`（带同样的
+目标参数）。在本地 clone 里跑 `./install.sh …` 会软链到这个 clone——改 clone 所有 agent 同步生效；
+`curl` 方式会 clone 到 `~/.learn-project`（`LEARN_PROJECT_HOME` 可改）再软链。脚本只需要
+`bash 3.2+`、`git`、`awk`、`grep`、`sort`。
+</details>
 
 ## 用法
 

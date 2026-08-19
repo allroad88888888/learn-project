@@ -41,28 +41,103 @@ memory plugin, chat compression, a vector store, or one big `ARCHITECTURE.md`.
 
 ## Install
 
-One skill source, several channels. Pick your agent:
+One skill source, several channels. Open the one you use — each is a single command.
 
-| Agent | Command | Where it lands |
-|---|---|---|
-| **Claude Code** (skill, user-level) | `curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh \| bash -s -- --claude` | `~/.claude/skills/learn-project` |
-| **Claude Code** (skill, project-level) | `… \| bash -s -- --claude-project <repo>` | `<repo>/.claude/skills/learn-project` |
-| **Claude Code** (plugin) | `/plugin marketplace add allroad88888888/learn-project` then `/plugin install learn-project@learn-project` | plugin cache |
-| **Codex** | `… \| bash -s -- --codex` — or tell Codex: *"install the skill from allroad88888888/learn-project, path skills/learn-project"* (its built-in `skill-installer` does it) | `$CODEX_HOME/skills/learn-project` |
-| **DeepSeek Harness (dsh)** | `… \| bash -s -- --dsh` (user, `$DSH_HOME/skills`) · `--dsh-project <repo>` (`<repo>/.dsh/skills`) · `--agents-home` (shared `~/.agents/skills`, also read by dsh) | native SKILL.md support, no plugin needed |
-| **Cursor** | `… \| bash -s -- --cursor <repo>` (writes a rule that points at the skill) | `<repo>/.cursor/rules/learn-project.mdc` |
-| **Gemini CLI / Copilot / anything reading `AGENTS.md`** | `… \| bash -s -- --agents-md <repo>` (or `--agents-md <repo>/GEMINI.md`) — appends a marked pointer block | that file |
-| **Any runtime that loads `<dir>/<name>/SKILL.md`** | `… \| bash -s -- --dir <path>` | `<path>/learn-project` |
-| **Everything at once** | `… \| bash -s -- --all` (= `--claude --codex`) | |
+<details>
+<summary><b>Claude Code</b> — skill (user-level or project-level) or plugin</summary>
 
-`install.sh` is idempotent; add `--copy` to copy instead of symlink, `--ref v0.1.0` to pin,
-`--uninstall` with the same flags to remove. Run from a local clone (`./install.sh …`) and it
-links to that clone, so editing the clone updates every agent. When run via `curl`, it clones to
-`~/.learn-project` (override with `LEARN_PROJECT_HOME`) and links from there.
+User-level (`~/.claude/skills/learn-project`):
 
-The skill follows the open [Agent Skills](https://agentskills.io) format (`SKILL.md` with
-`name`/`description`), so any client listed there can load `skills/learn-project/` directly.
-Scripts need only `bash 3.2+`, `git`, `awk`, `grep`, `sort`.
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --claude
+```
+
+Project-level (`<repo>/.claude/skills/learn-project`, travels with the repo):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --claude-project <repo>
+```
+
+As a plugin (inside Claude Code):
+
+```
+/plugin marketplace add allroad88888888/learn-project
+/plugin install learn-project@learn-project
+```
+</details>
+
+<details>
+<summary><b>Codex</b> — native skill</summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --codex
+```
+
+Lands in `$CODEX_HOME/skills/learn-project` (default `~/.codex/skills`). Or just tell Codex:
+*"install the skill from allroad88888888/learn-project, path skills/learn-project"* — its built-in
+`skill-installer` does it.
+</details>
+
+<details>
+<summary><b>DeepSeek Harness (dsh)</b> — native skill, no plugin needed</summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --dsh
+```
+
+Lands in `$DSH_HOME/skills/learn-project` (default `~/.dsh/skills`). Also available:
+`--dsh-project <repo>` → `<repo>/.dsh/skills`; `--agents-home` → shared `~/.agents/skills`
+(`$DSH_AGENTS_HOME`, read by dsh and other clients).
+</details>
+
+<details>
+<summary><b>Cursor</b> — a rule that points at the skill</summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --cursor <repo>
+```
+
+Writes `<repo>/.cursor/rules/learn-project.mdc` (`alwaysApply: false`, description-triggered) whose
+body says "read and follow `…/learn-project/SKILL.md`". Combine with `--claude-project <repo>` and the
+rule uses the project-relative path.
+</details>
+
+<details>
+<summary><b>Gemini CLI / GitHub Copilot / anything that reads <code>AGENTS.md</code></b></summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --agents-md <repo>
+```
+
+Appends a marked pointer block to `<repo>/AGENTS.md` (or name the file: `--agents-md <repo>/GEMINI.md`,
+`--agents-md <repo>/.github/copilot-instructions.md`). `--uninstall` removes exactly that block.
+</details>
+
+<details>
+<summary><b>Any runtime that loads <code>&lt;dir&gt;/&lt;name&gt;/SKILL.md</code></b></summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --dir <path>
+```
+
+Lands in `<path>/learn-project`. The skill follows the open [Agent Skills](https://agentskills.io)
+format (`SKILL.md` with `name`/`description`), so any client listed there can load
+`skills/learn-project/` directly.
+</details>
+
+<details>
+<summary><b>Everything at once, options, uninstall</b></summary>
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/allroad88888888/learn-project/main/install.sh | bash -s -- --all   # = --claude --codex --dsh
+```
+
+`install.sh` is idempotent. Options: `--copy` (copy instead of symlink), `--ref v0.1.0` (pin a
+version), `--uninstall` (with the same target flags). Run from a local clone (`./install.sh …`)
+and it links to that clone, so editing the clone updates every agent; via `curl` it clones to
+`~/.learn-project` (override with `LEARN_PROJECT_HOME`) and links from there. Scripts need only
+`bash 3.2+`, `git`, `awk`, `grep`, `sort`.
+</details>
 
 ## Use
 
